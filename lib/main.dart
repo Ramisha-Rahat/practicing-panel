@@ -1,7 +1,9 @@
 import 'package:crudpanel/Bindings/controllerbinding.dart';
+import 'package:crudpanel/View/authpage.dart';
 import 'package:crudpanel/View/homepage.dart';
 import 'package:crudpanel/View/imagePage.dart';
 import 'package:crudpanel/View/secondpage.dart';
+import 'package:crudpanel/View/startingPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,11 +27,13 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(),
       initialBinding: Controllerbinding(),
-      initialRoute: '/home', // Set the initial route
+      initialRoute: '/auth-page', // Set the initial route
       getPages: [
         GetPage(name: '/home', page: () => MyHomePage()),
         GetPage(name: '/add-item', page: () => viewPage()),
         GetPage(name: '/add-image', page: () => ImagePage()),
+        GetPage(name: '/start-page', page: () => StartingPage()),
+        GetPage(name: '/auth-page', page: () => MyAuthPage ()),
       ],
     );
   }
