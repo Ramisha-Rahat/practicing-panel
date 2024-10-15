@@ -54,7 +54,6 @@ class _viewPageState extends State<viewPage> {
                      priceController.text,
                      categoryController.text,
                      descriptionController.text,
-                     idController.text,
                    );
                    Get.back();
                },

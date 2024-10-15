@@ -27,7 +27,6 @@ class _ImagePageState extends State<ImagePage> {
       body: Center(
         child: Obx(() {
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 200),
@@ -44,6 +43,7 @@ class _ImagePageState extends State<ImagePage> {
               : Image.file(imageController.image.value), // Display selected image before upload
           ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -51,12 +51,35 @@ class _ImagePageState extends State<ImagePage> {
                     },
                     child: const Text('Add Image'),
                   ),
+                  SizedBox(width: 10,),
                   ElevatedButton(
                       onPressed: () async {
                         await imageController.saveImageToFirestore(); // Save the image to Firestore
                       },
                       child: Text('Save')),
                 ],
+              ),
+              SizedBox(height: 30,),
+              Container(
+                child: Column(
+                  children: [
+                    Text('The image that you have saved is :'),
+              SizedBox(height: 30,),
+              Container(
+                height: 300,
+                width: 300,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: Colors.black),
+                    bottom: BorderSide(color: Colors.black),
+                    right: BorderSide(color: Colors.black),
+                      left:BorderSide(color: Colors.black),
+                  )
+                ),
+              )
+                  ],
+                ),
               ),
             ],
           );

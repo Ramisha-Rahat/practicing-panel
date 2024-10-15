@@ -19,18 +19,18 @@ class StartingPage extends StatefulWidget {
       context: context,
       builder: (context) {
         return Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Colors.black,
+          ),
         );
       },
     );
-
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: usernameController.text,
         password: passwordController.text,
       );
-
-      Navigator.pop(context);
+      //Navigator.pop(context);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -72,7 +72,9 @@ class StartingPage extends StatefulWidget {
             width: double.infinity,
             child: SingleChildScrollView(
                 child:  Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(height: 150,),
                     Container(
                         width: 300,
                         child: TextField(
@@ -129,12 +131,6 @@ class StartingPage extends StatefulWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text('Forgot Password  '),
-                    ],
-                  ),
                   SizedBox(height: 20.0),
                   Container(
                     padding: EdgeInsets.all(10),
@@ -181,20 +177,30 @@ class StartingPage extends StatefulWidget {
                   SizedBox(height: 20),
                   Row(
                     children: [
-                      SizedBox(width: 120),
+                      SizedBox(width: 100),
                       GestureDetector(
                         onTap: ()=>AuthService().signInWithGoogle(),
-                        child: Image.asset(
-                          'assets/images/google.png',
-                          height: 100,
-                          width: 50,
-                        ),
-                      ),
-                      SizedBox(width: 30),
-                      Image.asset(
-                        'assets/images/apple.png',
-                        height: 100,
-                        width: 50,
+                        child: Row(
+                          children: [
+                            Container(
+                                child: Center(
+                                  child: Text('Sig In with Google',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                                ),
+                            height: 80,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                                border: Border(
+                                    top: BorderSide(color: Colors.black),
+                                    bottom: BorderSide(color: Colors.black),
+                                    left: BorderSide(color: Colors.black),
+                                right: BorderSide(color: Colors.black),
+                      )
+                            ),),
+
+                          ],
+                        )
                       ),
                     ],
                   ),
