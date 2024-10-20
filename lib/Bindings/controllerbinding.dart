@@ -6,7 +6,7 @@ class Controllerbinding extends Bindings{
   @override
   void dependencies() {
     Get.put<itemController>(itemController());
-    Get.put(ImagePickerController());
+  //  Get.put(ImagePickerController());
   }
 
 }

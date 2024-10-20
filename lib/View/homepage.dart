@@ -17,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final itemController ItemController = Get.put(itemController());
 
-  final imageController = Get.find<ImagePickerController>();
+  //final imageController = Get.find<ImagePickerController>();
 
   void signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();

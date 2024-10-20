@@ -1,6 +1,8 @@
-import 'package:crudpanel/Controller/imagePickerController.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+
+import '../Controller/profileData.dart';
 
 class ImagePage extends StatefulWidget {
   const ImagePage({super.key});
@@ -10,80 +12,172 @@ class ImagePage extends StatefulWidget {
 }
 
 class _ImagePageState extends State<ImagePage> {
+  Uint8List? _image;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
 
-  final imageController = Get.put(ImagePickerController());
+  // Function to pick an image
+  Future<Uint8List?> pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      return await pickedFile.readAsBytes(); // Convert the image to Uint8List
+    }
+    return null;
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    // Fetch the image URL if it was previously saved
-    imageController.fetchSavedImage();
+  void selectImage() async {
+    Uint8List? img = await pickImage(ImageSource.gallery); // Call the pickImage function
+    setState(() {
+      _image = img; // Update the image state
+    });
+  }
+
+  void addProfile() async {
+    // Instantiate StoreData class
+    StoreData storeData = StoreData();
+
+    String name = nameController.text;
+    String bio = bioController.text;
+
+    // Check if image is selected
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image')),
+      );
+      return;
+    }
+
+    // Check if name and bio are not empty
+    if (name.isEmpty || bio.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    // Call the saveData function
+    String res = await storeData.saveData(
+      name: name,
+      bio: bio,
+      file: _image!,
+    );
+
+    if (res == 'Successful') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile saved successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $res')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
-      body: Center(
-        child: Obx(() {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 200),
-              Container(
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                ),
-          child: imageController.image.value.path == '' && imageController.imageUrl.value == ''
-          ? const Icon(Icons.person, size: 100)
-              : imageController.imageUrl.value != ''
-          ? Image.network(imageController.imageUrl.value) // Display image from Firestore
-              : Image.file(imageController.image.value), // Display selected image before upload
-          ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      imageController.imagePicker(); // Call the image picker function
-                    },
-                    child: const Text('Add Image'),
+      appBar: AppBar(
+        title: const Text('Register Yourself'),
+        backgroundColor: Colors.blue.shade100,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                // Display image if selected, else show default CircleAvatar
+                _image != null
+                    ? CircleAvatar(
+                  radius: 85,
+                  backgroundImage: MemoryImage(_image!), // Display the selected image
+                )
+                    : const CircleAvatar(
+                    radius: 85, backgroundColor: Colors.white),
+                // Positioned button to add image
+                Positioned(
+                  bottom: 5,
+                  right: 1,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    radius: 20,
+                    child: IconButton(
+                      onPressed: selectImage, // Call the selectImage function
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
                   ),
-                  SizedBox(width: 10,),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await imageController.saveImageToFirestore(); // Save the image to Firestore
-                      },
-                      child: Text('Save')),
-                ],
-              ),
-              SizedBox(height: 30,),
-              Container(
-                child: Column(
-                  children: [
-                    Text('The image that you have saved is :'),
-              SizedBox(height: 30,),
-              Container(
-                height: 300,
-                width: 300,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(color: Colors.black),
-                    bottom: BorderSide(color: Colors.black),
-                    right: BorderSide(color: Colors.black),
-                      left:BorderSide(color: Colors.black),
-                  )
                 ),
-              )
-                  ],
+              ],
+            ),
+            const SizedBox(height: 30), // Space between avatar and form
+            // Text field for Name
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Enter your name', // Adds a label
+                labelStyle: const TextStyle(color: Colors.black54),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Colors.black, // Border color
+                    width: 2, // Border thickness
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Colors.blue, // Color when focused
+                    width: 2,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15, // Vertical padding
+                  horizontal: 10, // Horizontal padding
                 ),
               ),
-            ],
-          );
-        }),
+            ),
+            const SizedBox(height: 30), // Space between text fields
+            // Text field for Bio
+            TextField(
+              controller: bioController,
+              decoration: InputDecoration(
+                labelText: 'Enter your bio', // Adds a label
+                labelStyle: const TextStyle(color: Colors.black54),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Colors.black, // Border color
+                    width: 2, // Border thickness
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Colors.blue, // Color when focused
+                    width: 2,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15, // Vertical padding
+                  horizontal: 10, // Horizontal padding
+                ),
+              ),
+              maxLines: 4, // Allow multiple lines for the bio input
+            ),
+            const SizedBox(height: 30), // Space before the button
+            ElevatedButton(
+              onPressed: addProfile, // Call addProfile on button press
+              child: const Text('Save My Data'),
+            ),
+          ],
+        ),
       ),
     );
   }
